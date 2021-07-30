@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        function getListProduct() {
+            $.ajax({
+                type: "GET",
+
+                url: "http://localhost:8080/api/products",
+                success: function (productList) {
+
+                    let str = "<button type='button' onclick='showCreateForm()'>Create</button>\n" +
+                        "<h1 style='margin-left: 30%'>List Blog</h1>" +
+                        "<table class='table table-dark table-striped'>\n" + "<tr>\n" +
+                        "<th>name</th>\n" +
+                        "<th>price</th>\n" +
+                        "<th>quantity</th>\n" +
+                        "<th>color</th>\n" +
+                        "<th>description</th>\n" +
+                        "<th>Category Name</th>\n" +
+                        "<th>Edit</th>\n" +
+                        "<th>Delete</th>\n" +
+                        "</tr>\n";
+                    console.log(productList)
+                    for (let i = 0; i < productList.length; i++) {
+                        str += "<tr><td>" + productList[i].name;
+                        str += "</td><td>" + productList[i].price;
+                        str += "</td><td>" + productList[i].quantity;
+                        str += "</td><td>" + productList[i].color;
+                        str += "</td><td>" + productList[i].description;
+                        str += "</td><td>" + productList[i].category.name;
+                        str += "</td><td>" + '<button type="button" onclick="showEditForm('+productList[i].id+')"> Edit </button> ';
+                        str += "</td><td>" + ' <button  type="button" onclick="showDeleteForm('+productList[i].id+')"> Delete</button> ';
+                        str += "</td>"
+                    }
+                    str += "</table>"
+                    document.getElementById('ProductList').innerHTML = str;
+                    $("#deleteModal").modal('hide');
+                    $("#editModal").modal('hide');
+                }
+            });
+        }
+
+        function showCreateForm() {
+            let str = "";
+            str += "<table class='table table-dark table-striped'>\n" +
+                "<tr>\n" +
+                "<td>Name</td>\n" +
+                "<td><input type='text' id='name'></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>Price:</td>\n" +
+                "<td><input type='text' id='price'></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>Quantity</td>\n" +
+                "<td><input type='text' id='quantity'></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>color</td>\n" +
+                "<td><input type='text' id='color'></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>Description: </td>\n" +
+                "<td><input type='text' id='description'></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td>category</td>\n" +
+                "<td><select id='category-create'>" +
+                "</select></td>\n" +
+                "</tr>\n" +
+                "<tr>\n" +
+                "<td></td>\n" +
+                "<td><button type='button' onclick='createProduct()'>Save</td>\n" +
+                "</tr>\n";
+            getCategory()
+            document.getElementById("create").innerHTML = str;
+        }
+
+        function createProduct() {
+            let name = $('#name').val();
+            let price = $('#price').val();
+            let quantity = $('#quantity').val();
+            let color = $('#color').val();
+            let description = $('#description').val();
+            let category = $('#category-create').val();
+            let product = {
+                "name": name,
+                "price": price,
+                "quantity": quantity,
+                "color": color,
+                "description": description,
+                "category": {
+                    "id": category
+                }
+            };
+            // goi ajax
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                data: JSON.stringify(product),
+                //tên API
+                url: "http://localhost:8080/api/products",
+                //xử lý khi thành công
+                success: getListProduct
+
+            });
+            //chặn sự kiện mặc định của thẻ
+            event.preventDefault();
+
+        }
+
+        function getCategory() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/api/categories",
+                success: function (list) {
+                    console.log(list)
+                    let str = "";
+                    for (let i = 0; i < list.length; i++) {
+                        str += "<option id='id-edit' value='" + list[i].id + "'>" + list[i].name + "</option>\n";
+
+                    }
+
+                    document.getElementById("category-create").innerHTML = str;
+                }
+            });
+        }function getCategory1() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/api/categories",
+                success: function (list) {
+                    console.log(list)
+                    let str = "";
+                    for (let i = 0; i < list.length; i++) {
+                        str += "<option id='id-edit' value='" + list[i].id + "'>" + list[i].name + "</option>\n";
+
+                    }
+
+                    document.getElementById("abc").innerHTML = str;
+                }
+            });
+        }
+        function showEditForm(id) {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/api/products/" + id,
+                success: function (product) {
+                    let name = product.name;
+                    let price = product.price;
+                    let quantity = product.name;
+                    let color = product.color;
+                    let description = product.description;
+                    let category = product.category;
+                    let str = `<input type="hidden" id="edit-id" value="${id}"><table class='table table-dark table-striped'>
+                            <tr>
+                                <td>Name:</td>
+                                <td><input type="text" id="edit-name" value=${name}></td>
+                           </tr>
+                           <tr>
+                               <td>Price</td>
+                               <td><input type="text" id="edit-price" value="${price}"></td>
+                            </tr>
+                           <tr>
+                            <tr>
+                               <td>Quantity</td>
+                               <td><input type="text" id="edit-quantity" value="${quantity}"></td>
+                            </tr>
+                           <tr> <tr>
+                               <td>Color</td>
+                               <td><input type="text" id="edit-color" value="${color}"></td>
+                            </tr>
+                           <tr> <tr>
+                               <td>Description</td>
+                               <td><input type="text" id="edit-description" value="${description}"></td>
+                            </tr>
+                           <tr>
+                                <td>Category name</td>
+                               <td>
+                               <select id="abc"  >
+` + getCategory1() + `
+</select>
+
+                               </td>
+                           </tr>
+                           <tr>
+                                <td></td>
+                               <td><button type="button" id="save" onclick="editProduct()" >Save</td>
+                           </tr>
+                       </table>`;
+
+
+                    document.getElementById("ProductList").innerHTML = str;
+
+                }
+            });
+            event.preventDefault();
+        }
+        function editProduct() {
+            let id = document.getElementById("edit-id").value;
+            let name = document.getElementById("edit-name").value;
+            let price = document.getElementById("edit-price").value;
+            let quantity = document.getElementById("edit-quantity").value;
+            let color = document.getElementById("edit-color").value;
+            let description = document.getElementById("edit-description").value;
+            let categoryId = document.getElementById("abc").value;
+            console.log(categoryId);
+            let product = {
+                "name": name,
+                "price": price,
+                "quantity": quantity,
+                "color": color,
+                "description": description,
+                "category": {
+                    "id": categoryId
+                }
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                },
+                type: "PUT",
+                data: JSON.stringify(product),
+                url: "http://localhost:8080/api/products/" + id,
+                success: getListProduct
+            })
+            event.preventDefault();
+        }
+        function showDeleteForm(id) {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/api/products/" + id,
+                success: function (product) {
+                    let name = product.name;
+                    let price = product.price;
+                    let quantity = product.name;
+                    let color = product.color;
+                    let description = product.description;
+                    let category = product.category.name;
+                    let str = `<input type="hidden" id="deleteId" value="${id}"><table class='table table-dark table-striped'>
+                            <tr>
+                                <td>Name:</td>
+                                <td><input type="text" id="edit-name" value=${name}></td>
+                           </tr>
+                           <tr>
+                               <td>Price</td>
+                               <td><input type="text" id="edit-price" value="${price}"></td>
+                            </tr>
+                           <tr>
+                            <tr>
+                               <td>Quantity</td>
+                               <td><input type="text" id="edit-quantity" value="${quantity}"></td>
+                            </tr>
+                           <tr> <tr>
+                               <td>Color</td>
+                               <td><input type="text" id="edit-color" value="${color}"></td>
+                            </tr>
+                           <tr> <tr>
+                               <td>Description</td>
+                               <td><input type="text" id="edit-description" value="${description}"></td>
+                            </tr>
+                           <tr> <tr>
+                               <td>Category</td>
+                               <td><input type="text" id="category" value="${category}"></td>
+                            </tr>
+                           <tr>
+                                <td></td>
+                               <td><button type="button" id="save" onclick="deleteBlog()" >Delete</td>
+                           </tr>
+                       </table>`;
+
+
+                    document.getElementById("ProductList").innerHTML = str;
+
+                }
+            });
+            event.preventDefault();
+        }
+        function deleteBlog() {
+            let id = document.getElementById("deleteId").value;
+            let product = {
+                id: id,
+
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                },
+                type: "DELETE",
+                data: JSON.stringify(product),
+                url: "http://localhost:8080/api/products/" + id,
+                success: getListProduct
+            })
+            event.preventDefault();
+        }
+        function searchProductByName(){
+            let name = document.getElementById("nameSearch");
+            let product = {
+                name : name
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json'
+                },
+                type: "GET",
+                data: JSON.stringify(product),
+                url: "http://localhost:8080/api/products/search",
+                success: getListProduct
+            })
+            event.preventDefault();
+        }
+        function showFormSearch(){
+            let str = '<input type="text" id="nameSearch"/>';
+            str += '<button type="button" onclick="searchProductByName()">Search</button>'
+
+        }
+    </script>
+</head>
+<body onload="getListProduct()">
+<div id="create"></div>
+<div>
+    <input type="text" id="nameSearch"/>
+    <button type="button" onclick="searchProductByName()">Search</button>
+</div>
+<div id="ProductList"></div>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+</body>
+</html>
