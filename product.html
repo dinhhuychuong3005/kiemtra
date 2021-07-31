@@ -29,7 +29,7 @@
                         "<th>Delete</th>\n" +
                         "</tr>\n";
                     console.log(productList)
-                    for (let i = 5 * count; i < 5 + 5 * count; i++) {
+                    for (let i = 2 * count; i < 2 + 2 * count; i++) {
                         str += "<tr><td>" + productList[i].name;
                         str += "</td><td>" + productList[i].price;
                         str += "</td><td>" + productList[i].quantity;
@@ -54,7 +54,7 @@
             let numNext = number - 1;
             console.log(numNext)
             if (numNext < 0) {
-                next(number + 1)
+                next(number + 2)
             } else {
                 $.ajax({
                     headers: {
@@ -114,20 +114,57 @@
                     str += "<button type='button' onclick='back(" + productList.number + ")'>Back</button>"
                     str += "\n<button type='button' id='numberPage' value='" + productList.totalPages + "'>" + productList.number + "</button>"
                     str += "  |  "
-                    str += "<button type='button' id='total' value='" + productList.totalPages + "'>" + productList.totalPages + "</button>"
+                    str += "<button type='button' id='total' value='" + productList.totalPages + "'>" + (productList.totalPages - 1) + "</button>"
                     document.getElementById('ProductList').innerHTML = str;
 
                 }
             });
         }
+        function createProduct() {
 
+            let name = $('#name').val();
+            let price = $('#price').val();
+            let quantity = $('#quantity').val();
+            let color = $('#color').val();
+            let description = $('#description').val();
+            let category = $('#category-create').val();
+            let product = {
+                "name": name,
+                "price": price,
+                "quantity": quantity,
+                "color": color,
+                "description": description,
+                "category": {
+                    "id": category
+                }
+            };
+
+            // goi ajax
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                data: JSON.stringify(product),
+                //tên API
+                url: "http://localhost:8080/api/products",
+                //xử lý khi thành công
+
+                success: getListProduct(0)
+
+            });
+            //chặn sự kiện mặc định của thẻ
+            event.preventDefault();
+
+        }
         function next(number) {
             console.log(number)
             let num = document.getElementById("total").value;
             console.log(num)
             let numNext = number + 1;
             console.log(numNext)
-            if (numNext > 2) {
+            if (numNext >= num) {
                 back(number -1)
             } else {
                 $.ajax({
@@ -183,44 +220,10 @@
                 "<td><button type='button' onclick='createProduct()'>Save</td>\n" +
                 "</tr>\n";
             getCategory()
-            document.getElementById("create").innerHTML = str;
+            document.getElementById("ProductList").innerHTML = str;
         }
 
-        function createProduct() {
-            let name = $('#name').val();
-            let price = $('#price').val();
-            let quantity = $('#quantity').val();
-            let color = $('#color').val();
-            let description = $('#description').val();
-            let category = $('#category-create').val();
-            let product = {
-                "name": name,
-                "price": price,
-                "quantity": quantity,
-                "color": color,
-                "description": description,
-                "category": {
-                    "id": category
-                }
-            };
-            // goi ajax
-            $.ajax({
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                type: "POST",
-                data: JSON.stringify(product),
-                //tên API
-                url: "http://localhost:8080/api/products",
-                //xử lý khi thành công
-                success: getListProduct
 
-            });
-            //chặn sự kiện mặc định của thẻ
-            event.preventDefault();
-
-        }
 
         function getCategory() {
             $.ajax({
@@ -339,7 +342,7 @@
                 type: "PUT",
                 data: JSON.stringify(product),
                 url: "http://localhost:8080/api/products/" + id,
-                success: getListProduct
+                success: getListProduct(0)
             })
             event.preventDefault();
         }
