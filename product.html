@@ -48,31 +48,15 @@
         }
 
         function back(number) {
-            console.log(number)
+            // console.log(number)
             let num = document.getElementById("total").value;
-            console.log(num)
+            // console.log(num)
             let numNext = number - 1;
-            console.log(numNext)
+            // console.log(numNext)
             if (numNext < 0) {
 
             } else {
-                $.ajax({
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    type: "GET",
-
-                    //tên API
-                    url: "http://localhost:8080/api/products/page?page=" + numNext,
-
-                    //xử lý khi thành công
-                    success: getListProduct(numNext)
-
-                });
-                //chặn sự kiện mặc định của thẻ
-                event.preventDefault();
-
+                   getListProduct(numNext)
             }
 
         }
@@ -167,22 +151,18 @@
             if (numNext >= num) {
                 getListProduct(0)
             } else {
-                $.ajax({
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    type: "GET",
-
-                    //tên API
-                    url: "http://localhost:8080/api/products/page?page=" + numNext,
+                // $.ajax({
+                //     headers: {
+                //         'Accept': 'application/json',
+                //         'Content-Type': 'application/json'
+                //     },
+                //     type: "GET",
+                //
+                //     //tên API
+                //     url: "http://localhost:8080/api/products/page?page=" + numNext,
 
                     //xử lý khi thành công
-                    success: getListProduct(numNext)
-
-                });
-                //chặn sự kiện mặc định của thẻ
-                event.preventDefault();
+                   getListProduct(numNext)
 
             }
         }
