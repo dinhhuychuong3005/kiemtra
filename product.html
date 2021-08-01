@@ -54,7 +54,7 @@
             let numNext = number - 1;
             console.log(numNext)
             if (numNext < 0) {
-                next(number + 2)
+
             } else {
                 $.ajax({
                     headers: {
@@ -112,9 +112,9 @@
                     str += "<button type='button' onclick='next(" + productList.number + ")'>next</button>"
                     str += " | "
                     str += "<button type='button' onclick='back(" + productList.number + ")'>Back</button>"
-                    str += "\n<button type='button' id='numberPage' value='" + productList.totalPages + "'>" + productList.number + "</button>"
+                    str += "\n<button type='button' id='numberPage' value='" + productList.totalPages + "'>" + (productList.number + 1) + "</button>"
                     str += "  |  "
-                    str += "<button type='button' id='total' value='" + productList.totalPages + "'>" + (productList.totalPages - 1) + "</button>"
+                    str += "<button type='button' id='total' value='" + productList.totalPages + "'>" + (productList.totalPages) + "</button>"
                     document.getElementById('ProductList').innerHTML = str;
 
                 }
@@ -165,7 +165,7 @@
             let numNext = number + 1;
             console.log(numNext)
             if (numNext >= num) {
-                back(number -1)
+                getListProduct(0)
             } else {
                 $.ajax({
                     headers: {
